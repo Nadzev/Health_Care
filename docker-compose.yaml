@@ -1,0 +1,20 @@
+version: '3'
+services:
+  database_heathcare:
+    image: mongo
+    container_name: database_HealthCare
+    env_file:
+      .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: systemCare
+      MONGO_INITDB_ROOT_PASSWORD: healtcare123
+      MONGO_INITDB_DATABASE: HealthCare
+    volumes:
+      - './database_health:/data/db'
+    ports:
+      - "27030:27017"
+    command: [--auth]
+
+
+
+

@@ -1,0 +1,5 @@
+.database_health/
+.idea/
+.db/
+__pycache__/
+venv
