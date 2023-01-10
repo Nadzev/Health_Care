@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from jose import  jwt
 from datetime import datetime
 from datetime import datetime, timedelta
-from src.database.connection import ConnectionHandler
+from src.database.connection import health_care
 from passlib.context import CryptContext
 
 import bcrypt
@@ -15,7 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def create_index(sio):
 
-    db = await ConnectionHandler.database()
+    db = health_care
     await db['Paciente'].create_index([('email', ASCENDING)], unique=True)
     await db['Medico'].create_index([('email', ASCENDING)], unique=True)
 
@@ -42,15 +42,15 @@ class Repository:
     #     return cls
     # def __init__(self):
     
-    
+    db = health_care
     
     @classmethod
     async def get_user_email(cls,collection, email):
-        db = await ConnectionHandler.database()
+        # db = await ConnectionHandler.database()
         query = {'email': email}
         print(query)
-        user = db[collection].find(query)
-        print(dir(user))
+        user = cls.db[collection].find(query)
+        print(user.to_list(1))
         return user
 
   

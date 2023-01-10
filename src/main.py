@@ -22,7 +22,7 @@ app.include_router(doctor_routes.doctor_routes)
 
 app_socket = socketio.ASGIApp(socketio_server=sio, other_asgi_app=app)
 
-print('oioo')
+
 
 # @sio.on('message', namespace='/chat')
 # async def chat(sid, data):

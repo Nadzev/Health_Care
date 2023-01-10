@@ -1,4 +1,4 @@
-from src.database.database import ConnectionHandler
+# from src.database.database import ConnectionHandler
 from src.models.schemas import SchemaConsulting
 from fastapi.exceptions import HTTPException
 from src.database.database import Repository
@@ -12,22 +12,23 @@ class PacientController:
     async def create(cls, paciente):
         collection = 'Paciente'
         user = await Repository.get_user_email(collection, paciente.email)
-        # paciente.password = cls..get_password_hash(paciente.password)
+        paciente.password = Repository.get_password_hash(paciente.password)
         password = user.password
         salt = bcrypt.gensalt()
         # Hashing the password
         hashed = bcrypt.hashpw(password, salt)
+
         # try:
         #     await cls.db.insert_by_collection(collection, paciente.dict())
         # except HTTPException:
         #     raise HTTPException(status_code=409,
         #                         detail="User already registered.")
 
-        print(user)
+        
         if user is not None:
             return "User already registered."
         else:
-            signup = await cls.db.insert_by_collection(collection, paciente.dict())
+            signup = await Repository.insert_by_collection(collection, paciente.dict())
             return f'The pacient was successfully created'
 
     @classmethod
@@ -59,7 +60,6 @@ class PacientController:
         # horario_consulta: Optional[str]
 
         await cls.db.insert_appointment(token, schedule)
-        # await cls.db.set_params(collection, user, cpf, nome, data)
         return 'appointment'
 
     @classmethod
