@@ -1,31 +1,33 @@
-# from motor.motor_asyncio import AsyncIOMotorClient
-# from src.utils.enviroment import env
-#
-#
-# class Mongo:
-#
-#    @classmethod
-#    async def connection(cls):
-#         connection = AsyncIOMotorClient(
-#             host=env('DATABASE_HOST'),
-#             password=env('DATABASE_PASSWORD'),
-#             port=env('DATABASE_PORT'),
-#             username=env('DATABASE_USER'),
-#         )
-#         return connection
-#
-#    @classmethod
-#    async def database(cls):
-#         database = 'HealthCare'
-#         db = await cls.connection()
-#         return db[database]
-#
-#    @classmethod
-#    async def get_collection(cls,collection):
-#        db = await cls.database()
-#        return db[collection]
+from motor.motor_asyncio import AsyncIOMotorClient
+from src.utils.enviroment import env
 
+class ConnectionHandler:
+    database_name: str = env('DATABASE_NAME')
 
+    def __new__(cls, loop=None, *args, **kwargs):
+        cls.database_name = env('DATABASE_NAME')
+
+        return cls
+
+    @classmethod
+    async def connection(cls):
+        connection =  AsyncIOMotorClient(
+            host=env('DATABASE_HOST'),
+            port=int(env('DATABASE_PORT')),
+            username=env('DATABASE_USER'),
+            password=env('DATABASE_PASS'),
+            authSource='admin',
+     
+        )
+
+        return connection
+    
+    @classmethod
+    async def database(cls):
+        client = await cls.connection()
+        return client[cls.database_name]
+    
+    
 
 
 

@@ -1,16 +1,17 @@
-from src.database.database import Mongo
+from src.database.database import ConnectionHandler
 from src.models.schemas import SchemaConsulting
 from fastapi.exceptions import HTTPException
+from src.database.database import Repository
 import json
 import bcrypt
 
 class PacientController:
-    db = Mongo()
 
+    
     @classmethod
     async def create(cls, paciente):
         collection = 'Paciente'
-        user = await cls.db.get_user_email(collection, paciente.email)
+        user = await Repository.get_user_email(collection, paciente.email)
         paciente.password = cls.db.get_password_hash(paciente.password)
 
         # try:
@@ -28,10 +29,11 @@ class PacientController:
 
     @classmethod
     async def authenticate_user(cls, email: str, password: str):
-        user = await cls.db.get_user_email('Paciente', email)
+        user = await Repository.get_user_email('Paciente', email)
+        print(user.to_list(1))
         if not user:
             return False
-        if not cls.db.verify_password(password, user['password']):
+        if not await Repository.verify_password(password, user['password']):
             return False
         return user
 
@@ -59,7 +61,7 @@ class PacientController:
 
     @classmethod
     async def list_schedules(cls,id):
-        appointments_list = await cls.db.list_appointments(id)
+        appointments_list = await Repository.list_appointments(id)
         return appointments_list
 
 

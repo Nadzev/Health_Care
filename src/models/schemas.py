@@ -1,7 +1,7 @@
 from pydantic import *
 from typing import *
 from datetime import datetime
-
+from pydantic import BaseModel
 
 class AppointmentConsulting(BaseModel):
     token: Optional[str]

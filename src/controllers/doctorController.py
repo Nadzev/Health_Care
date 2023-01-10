@@ -1,16 +1,15 @@
-from src.database.database import Mongo
+from src.database.database import Repository
 from src.services.api_crm import Crm
 
 
 class DoctorController:
-    db = Mongo()
+    db = Repository
 
     @classmethod
     async def create(cls, doctor):
         collection = 'Medico'
         user = await cls.db.get_user_email(collection, doctor.email)
         doctor.password = cls.db.get_password_hash(doctor.password)
-        print(user)
         if user is not None:
             return "User already registered."
         else:

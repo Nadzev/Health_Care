@@ -1,16 +1,17 @@
 import json
 
 from fastapi import APIRouter, status, Body, Depends, Request
-from src.models.schemas import SchemaConsulting, Pacient, TokenData, AppointmentConsulting,Login
+from src.models.schemas import SchemaConsulting, Pacient, TokenData,Login
 from src.controllers.pacientController import PacientController
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.exceptions import HTTPException
 from jose import JWTError, jwt
-from src.database.database import Mongo
+from src.database.database import Repository
 import jwt
 from src.models.schemas import Collection
+
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -44,7 +45,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = Mongo.get_user_name('Paciente', token_data.username)
+    user = Repository.get_user_name('Paciente', token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -91,18 +92,16 @@ async def login(login:Login):
     )
 
     userr = {'email': login.email}
-    await Mongo.set_token('Paciente', userr, access_token)
+    await Repository.set_token('Paciente', userr, access_token)
     return {"access_token": access_token, "token_type": "bearer", "user": "paciente"}
 
 
 @routes.post('/WebMedic/Paciente/appointment')
 async def appointment(req: Request):
     token = req.headers['Authorization']
-    print(req)
     schedule = SchemaConsulting()
     body = await req.body()
     body = json.loads(body)
-    print(body)
     schedule.especialidade = body['especialidade']
     schedule.doctor = body['doctor']
     schedule.doenca = body['doenca']

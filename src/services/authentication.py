@@ -1,11 +1,10 @@
-from src.database.database import Mongo
+from src.database.database import Repository
+from src.database.connection import ConnectionHandler
 from passlib.context import CryptContext
 from datetime import datetime,timedelta
 from fastapi.exceptions import HTTPException
 from jwt.exceptions import PyJWTError
-from fastapi.security import OAuth2PasswordBearer
 from fastapi import status
-import bcrypt
 import os
 import jwt
 
@@ -15,18 +14,20 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class Authentication:
+        
+    db = ConnectionHandler.connection()
     @classmethod
-    def verify_password(cls, plain_password, hashed_password):
+    async def verify_password(cls, plain_password, hashed_password):
         return pwd_context.verify(plain_password, hashed_password)
 
     @classmethod
-    def get_password_hash(cls, password):
+    async def get_password_hash(cls, password):
         return pwd_context.hash(password)
 
     @classmethod
-    def authenticate_user(cls, db, email: str, password: str):
-        db = Mongo()
-        user = await db.get_user_email('Paciente', email)
+    async def authenticate_user(cls, db, email: str, password: str):
+        
+        user = await Repository.get_user_email('Paciente', email)
         if not user:
             return False
         if not cls.verify_password(password, user.password):
@@ -56,10 +57,10 @@ class Authentication:
             email: str = payload.get("sub")
             if email is None:
                 raise credentials_exception
-            # token_data = schemas.TokenData(email=email)
+            
         except PyJWTError:
             raise credentials_exception
-        user = db.get_user_by_email(db,'definir depois')
+        user = Repository.get_user_by_email(db,'definir depois')
         if user is None:
             raise credentials_exception
         return user
