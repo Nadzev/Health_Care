@@ -67,17 +67,20 @@ async def init():
 
 @routes.post('/WebMedic/Paciente-Register', status_code=status.HTTP_201_CREATED)
 async def register_paciente(data: Pacient):
+    print(data)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": data.email}, expires_delta=access_token_expires
+         data={"sub": data.email}, expires_delta=access_token_expires
     )
     data.token = access_token
     user = await PacientController.create(data)
+
     return access_token
 
 
 @routes.post('/WebMedic/Paciente-login')
 async def login(login:Login):
+    print(login)
     user = await PacientController.authenticate_user(login.email, login.password)
     if not user:
         raise HTTPException(

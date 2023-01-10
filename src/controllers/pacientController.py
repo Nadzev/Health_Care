@@ -12,8 +12,11 @@ class PacientController:
     async def create(cls, paciente):
         collection = 'Paciente'
         user = await Repository.get_user_email(collection, paciente.email)
-        paciente.password = cls.db.get_password_hash(paciente.password)
-
+        # paciente.password = cls..get_password_hash(paciente.password)
+        password = user.password
+        salt = bcrypt.gensalt()
+        # Hashing the password
+        hashed = bcrypt.hashpw(password, salt)
         # try:
         #     await cls.db.insert_by_collection(collection, paciente.dict())
         # except HTTPException:

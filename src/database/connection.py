@@ -25,6 +25,7 @@ class ConnectionHandler:
     @classmethod
     async def database(cls):
         client = await cls.connection()
+        print(client[cls.database_name])
         return client[cls.database_name]
     
     

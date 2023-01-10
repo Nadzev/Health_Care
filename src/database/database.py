@@ -48,7 +48,9 @@ class Repository:
     async def get_user_email(cls,collection, email):
         db = await ConnectionHandler.database()
         query = {'email': email}
+        print(query)
         user = db[collection].find(query)
+        print(dir(user))
         return user
 
   
@@ -134,6 +136,11 @@ class Repository:
         await cls.insert_embedded('Medico', doc, query)
         await cls.db['Medico'].update_one(doc, sett)
         await cls.db['Medico'].update_one(doc, query)
+    
+    @classmethod
+    async def insert_by_collection(collection, data):
+        pass
+
 
 
 

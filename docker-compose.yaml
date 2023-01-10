@@ -2,7 +2,7 @@ version: '3'
 services:
   database_heathcare:
     image: mongo
-    container_name: database_HealthCare
+    container_name: database_systemcare
     env_file:
       .env
     environment:
