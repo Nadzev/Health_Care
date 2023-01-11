@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Path, status, Depends
+from fastapi import APIRouter, Path, status, Depends
 from src.models.schemas import Doctor, TokenData, Login
 from src.controllers.doctorController import DoctorController
 from src.database.database import Repository
@@ -21,7 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 routes = APIRouter()
 
 
-@doctor_routes.post('/WebMedic/Medico-Register')
+@doctor_routes.post("/WebMedic/Medico-Register")
 async def register_medico(doctor: Doctor):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -32,9 +32,9 @@ async def register_medico(doctor: Doctor):
     return access_token
 
 
-@doctor_routes.post('/check_crm')
+@doctor_routes.post("/check_crm")
 async def check_crm(name, crm):
-    response = await DoctorController.verify_crm(name,crm)
+    response = await DoctorController.verify_crm(name, crm)
     return response
 
 
@@ -63,26 +63,25 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = Repository.get_user_name('Medico', token_data.username)
+    user = Repository.get_user_name("Medico", token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
 
-async def get_current_active_user(current_user = Depends(get_current_user)):
+async def get_current_active_user(current_user=Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
-
-@doctor_routes.get('/WebMedic', status_code=status.HTTP_200_OK)
+@doctor_routes.get("/WebMedic", status_code=status.HTTP_200_OK)
 async def init():
-    print('init')
+    print("init")
     return status.HTTP_200_OK
 
 
-@doctor_routes.post('/WebMedic/Medico-login')
+@doctor_routes.post("/WebMedic/Medico-login")
 async def login(login: Login):
     user = await DoctorController.authenticate_user(login.email, login.password)
     print(user)
@@ -95,17 +94,17 @@ async def login(login: Login):
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user['email']}, expires_delta=access_token_expires
+        data={"sub": user["email"]}, expires_delta=access_token_expires
     )
-    userr = {'email': login.email}
+    userr = {"email": login.email}
 
-    await Repository.set_token('Medico', userr, access_token)
+    await Repository.set_token("Medico", userr, access_token)
 
-    return {"access_token": access_token, "token_type": "bearer", "user":"medico"}
+    return {"access_token": access_token, "token_type": "bearer", "user": "medico"}
 
 
-@doctor_routes.post('/WebMedic/Medico-agenda/{token}')
-async def insert_consulta_horarios(req:Request,token):
+@doctor_routes.post("/WebMedic/Medico-agenda/{token}")
+async def insert_consulta_horarios(req: Request, token):
     # token = req.headers['Authorization']
     print(req)
 
@@ -119,10 +118,11 @@ async def insert_consulta_horarios(req:Request,token):
     await DoctorController.dados_consulta(token, body)
 
 
-
-@doctor_routes.get('/WebMedic/Medicos')
+@doctor_routes.get("/WebMedic/Medicos")
 async def lista_medicos():
     return await DoctorController.index()
+
+
 # def verify_token(req: Request):
 #     print(req.headers)
 #     token = req.headers["authorization"]

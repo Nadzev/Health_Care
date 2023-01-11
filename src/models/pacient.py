@@ -1,11 +1,13 @@
 from pydantic import *
+
 # from src.database.database import PyObjectId
-#from bson.objectid import ObjectId
+# from bson.objectid import ObjectId
 
 #
 # class ObjectId(ObjectId):
 #     pass
 #
+
 
 class Pacient(BaseModel):
     # id: PyObjectId = Field(default_factory=PyObjectId, alias='_id')
@@ -19,11 +21,7 @@ class Pacient(BaseModel):
         arbitrary_types_allowed = True
         # json_encoders = {ObjectId: str}
         schema_extra = {
-            "examples" :{
-            #     escrever exemplos depois
-
+            "examples": {
+                #     escrever exemplos depois
             }
-
         }
-
-        

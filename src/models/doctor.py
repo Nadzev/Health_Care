@@ -1,4 +1,5 @@
 from pydantic import *
+
 # from src.database.database import PyObjectId
 # from bson.objectid import ObjectId
 
@@ -18,6 +19,5 @@ class Doctor(BaseModel):
         schema_extra = {
             "examples": {
                 #     escrever exemplos depois
-
             }
         }

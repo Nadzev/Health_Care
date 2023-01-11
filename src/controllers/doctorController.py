@@ -7,21 +7,21 @@ class DoctorController:
 
     @classmethod
     async def create(cls, doctor):
-        collection = 'Medico'
+        collection = "Medico"
         user = await cls.db.get_user_email(collection, doctor.email)
         doctor.password = cls.db.get_password_hash(doctor.password)
         if user is not None:
             return "User already registered."
         else:
             signup = await cls.db.insert_by_collection(collection, doctor.dict())
-            return f'The user was successfully created'
+            return f"The user was successfully created"
 
     @classmethod
     async def authenticate_user(cls, email: str, password: str):
-        user = await cls.db.get_user_email('Medico', email)
+        user = await cls.db.get_user_email("Medico", email)
         if not user:
             return False
-        if not cls.db.verify_password(password, user['password']):
+        if not cls.db.verify_password(password, user["password"]):
             return False
         return user
 
@@ -35,5 +35,5 @@ class DoctorController:
         return status
 
     @classmethod
-    async def dados_consulta(cls, token,dados):
+    async def dados_consulta(cls, token, dados):
         await cls.db.insert_agenda(token, dados)

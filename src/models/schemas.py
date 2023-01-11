@@ -3,13 +3,15 @@ from typing import *
 from datetime import datetime
 from pydantic import BaseModel
 
+
 class AppointmentConsulting(BaseModel):
     token: Optional[str]
     especialidade: Optional[str]
     doctor: Optional[str]
-    data_consulta:Optional[datetime]
+    data_consulta: Optional[datetime]
     doenca: Optional[str]
     horario_consulta: Optional[datetime]
+
 
 # class Header(BaseModel):
 #     token:
@@ -50,15 +52,14 @@ class Doctor(BaseModel):
     data_nascimento: Optional[datetime]
     dados_consulta = {}
 
-
-
     # dia_semana = datetime
+
+
 # class Paciente2(BaseModel):
 #     nome: Optional[str]
 #     cpf: Optional[str]
 #     especialidade: Optional[str] = None
 #     createdAt: Optional[datetime] = datetime.utcnow()
-
 
 
 # class Doctor(BaseModel):
@@ -75,15 +76,14 @@ class Doctor(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
 
+
 class SchemaConsulting(BaseModel):
     especialidade: Optional[str]
     doctor: Optional[str]
-    data_consulta:Optional[datetime]
+    data_consulta: Optional[datetime]
     doenca: Optional[str]
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-

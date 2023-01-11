@@ -1,7 +1,7 @@
 import json
 
 from fastapi import APIRouter, status, Body, Depends, Request
-from src.models.schemas import SchemaConsulting, Pacient, TokenData,Login
+from src.models.schemas import SchemaConsulting, Pacient, TokenData, Login
 from src.controllers.pacientController import PacientController
 from datetime import datetime, timedelta
 from typing import Optional
@@ -45,32 +45,29 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = Repository.get_user_name('Paciente', token_data.username)
+    user = Repository.get_user_name("Paciente", token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
 
-async def get_current_active_user(current_user = Depends(get_current_user)):
+async def get_current_active_user(current_user=Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
-
-
-
-@routes.get('/WebMedic', status_code=status.HTTP_200_OK)
+@routes.get("/WebMedic", status_code=status.HTTP_200_OK)
 async def init():
     return status.HTTP_200_OK
 
 
-@routes.post('/WebMedic/Paciente-Register', status_code=status.HTTP_201_CREATED)
+@routes.post("/WebMedic/Paciente-Register", status_code=status.HTTP_201_CREATED)
 async def register_paciente(data: Pacient):
     print(data)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-         data={"sub": data.email}, expires_delta=access_token_expires
+        data={"sub": data.email}, expires_delta=access_token_expires
     )
     data.token = access_token
     user = await PacientController.create(data)
@@ -78,8 +75,8 @@ async def register_paciente(data: Pacient):
     return access_token
 
 
-@routes.post('/WebMedic/Paciente-login')
-async def login(login:Login):
+@routes.post("/WebMedic/Paciente-login")
+async def login(login: Login):
     print(login)
     user = await PacientController.authenticate_user(login.email, login.password)
     if not user:
@@ -91,33 +88,27 @@ async def login(login:Login):
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user['email']}, expires_delta=access_token_expires
+        data={"sub": user["email"]}, expires_delta=access_token_expires
     )
 
-    userr = {'email': login.email}
-    await Repository.set_token('Paciente', userr, access_token)
+    userr = {"email": login.email}
+    await Repository.set_token("Paciente", userr, access_token)
     return {"access_token": access_token, "token_type": "bearer", "user": "paciente"}
 
 
-@routes.post('/WebMedic/Paciente/appointment')
+@routes.post("/WebMedic/Paciente/appointment")
 async def appointment(req: Request):
-    token = req.headers['Authorization']
+    token = req.headers["Authorization"]
     schedule = SchemaConsulting()
     body = await req.body()
     body = json.loads(body)
-    schedule.especialidade = body['especialidade']
-    schedule.doctor = body['doctor']
-    schedule.doenca = body['doenca']
-    schedule.data_consulta = body['data_consulta']
+    schedule.especialidade = body["especialidade"]
+    schedule.doctor = body["doctor"]
+    schedule.doenca = body["doenca"]
+    schedule.data_consulta = body["data_consulta"]
     await PacientController.make_an_appointment(token, schedule)
 
-@routes.get('/WebMedic/minhas-consultas/{id}')
+
+@routes.get("/WebMedic/minhas-consultas/{id}")
 async def schedules(id):
     return await PacientController.list_schedules(id)
-
-
-
-
-
-
-
